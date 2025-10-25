@@ -8,6 +8,7 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input" 
 import Link from "next/link"
 import { Search } from "lucide-react"
+import { events } from "@/lib/events-data" 
 import {
   Select,
   SelectContent,
@@ -28,44 +29,41 @@ import {
 // Define the number of items per page
 const ITEMS_PER_PAGE = 6;
 
+interface Event {
+    id: number;
+    title: string;
+    description: string;
+    category: string;
+    date: string; 
+    time: string;
+    location: string;
+    image: string;
+    registrationOpen: boolean;
+    registrationLink: string;
+}
+
 export default function EventsPage() {
-  // Inline events data (restored)
-  const events = [
-    // Past Events
-    { id: 1, title: "Full Stack Tech Workshop 2025", description: "Intensive workshop on emerging technologies.", date: "2025-09-15", time: "10:00 AM", location: "PCCOER", category: "Workshop", image: "/events/workshop.jpg", registrationLink: "#", registrationOpen: false },
-    { id: 2, title: "Competitive Coding Challenge", description: "Test your programming skills in this competitive coding challenge. REGISTRATION IS NOW CLOSED.", date: "2025-09-20", time: "2:00 PM", location: "PCCOER", category: "Competition", image: "/events/coding.jpg", registrationLink: "#", registrationOpen: false },
-    { id: 3, title: "Industry Expert Talk on AI/ML", description: "Learn from industry professionals about the latest trends in technology.", date: "2025-10-01", time: "11:00 AM", location: "PCCOER", category: "Seminar", image: "/events/talk.jpg", registrationLink: "#", registrationOpen: false },
-    { id: 4, title: "Webinar: Intro to Cloud Computing", description: "Introductory session on key cloud concepts and services like AWS and Azure.", date: "2025-10-15", time: "4:00 PM", location: "PCCOER", category: "Webinar", image: "/events/expo.jpg", registrationLink: "#", registrationOpen: false },
-    
-    // Upcoming Events
-    { id: 5, title: "Annual Student Conference", description: "A two-day conference featuring keynote speakers and research paper presentations.", date: "2025-12-10", time: "9:00 AM", location: "PCCOER", category: "Conference", image: "/events/conference.jpg", registrationLink: "#", registrationOpen: true },
-    { id: 6, title: "Game Dev Jam", description: "Develop a game from scratch in 48 hours.", date: "2025-12-15", time: "6:00 PM", location: "PCCOER", category: "Workshop", image: "/events/gamedev.jpg", registrationLink: "#", registrationOpen: true },
-    { id: 7, title: "Cybersecurity Bootcamp", description: "Hands-on training in network security and ethical hacking.", date: "2026-01-10", time: "9:00 AM", location: "PCCOER", category: "Workshop", image: "/events/security.jpg", registrationLink: "#", registrationOpen: true },
-    { id: 8, title: "Data Science Visualization", description: "Master data visualization using Python and R.", date: "2026-01-20", time: "1:00 PM", location: "PCCOER", category: "Seminar", image: "/events/data.jpg", registrationLink: "#", registrationOpen: true },
-    { id: 9, title: "Mobile App Hackathon", description: "Build a prototype mobile app in this intense competition.", date: "2026-02-01", time: "9:00 AM", location: "PCCOER", category: "Competition", image: "/events/hackathon.jpg", registrationLink: "#", registrationOpen: true },
-    { id: 10, title: "Quantum Computing Talk", description: "Expert session on the future of quantum mechanics in computing.", date: "2026-02-15", time: "3:00 PM", location: "PCCOER", category: "Seminar", image: "/events/quantum.jpg", registrationLink: "#", registrationOpen: true },
-  ]
 
   const [activeCategory, setActiveCategory] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("all");
 
+  const typedEvents: Event[] = events as any; 
+
   const categories = useMemo(() => {
-    const uniqueCategories = new Set(events.map(event => event.category))
+    const uniqueCategories = new Set(typedEvents.map(event => event.category))
     return ["All", ...Array.from(uniqueCategories)]
-  }, [events])
+  }, [typedEvents])
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1)
-  }, [activeCategory, searchQuery])
+  }, [activeCategory, searchQuery, sortBy])
 
-  // Filter and sort events based on category, search, and sort criteria
   const filteredAndSearchedEvents = useMemo(() => {
-    let workingEvents = [...events] // Create a copy to avoid mutating original array
+    let workingEvents: Event[] = [...typedEvents] 
     
-    // Apply category filter
     if (activeCategory !== "All") {
       workingEvents = workingEvents.filter(event => event.category === activeCategory)
     }
@@ -81,7 +79,7 @@ export default function EventsPage() {
 
     // Filter for upcoming/past events and sort by date
     const now = new Date();
-    now.setHours(0, 0, 0, 0); // Set to start of today for fair comparison
+    now.setHours(0, 0, 0, 0); 
 
     switch (sortBy) {
       case "upcoming":
@@ -90,16 +88,15 @@ export default function EventsPage() {
         break
       case "past":
         workingEvents = workingEvents.filter(event => new Date(event.date) < now)
-        workingEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Most recent first
+        workingEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
         break
       case "all":
       default:
-        // No filtering or sorting for "all" option - show events in original order
         break
     }
 
     return workingEvents
-  }, [events, activeCategory, searchQuery, sortBy])
+  }, [typedEvents, activeCategory, searchQuery, sortBy])
 
   // Calculate total number of pages
   const totalPages = Math.ceil(filteredAndSearchedEvents.length / ITEMS_PER_PAGE);
@@ -121,6 +118,7 @@ export default function EventsPage() {
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-8">Events Dashboard</h1>
       
+      {/* --- Filters and Sort --- */}
       <div className="space-y-4 mb-10">
         <div className="flex gap-4 flex-col sm:flex-row">
           <div className="relative flex-1">
@@ -161,15 +159,19 @@ export default function EventsPage() {
           ))}
         </div>
       </div>
+      {/* --- End Filters and Sort --- */}
 
+      {/* --- Event Grid --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedEvents.length > 0 ? (
           paginatedEvents.map((event) => (
             <Card 
               key={event.id} 
-              className="flex flex-col overflow-hidden transition-all duration-400 ease-in-out hover:scale-[1.01] hover:shadow-2xl group" 
+              className="flex flex-col overflow-hidden pt-0 transition-all duration-400 ease-in-out hover:scale-[1.01] hover:shadow-2xl group" 
             >
-              <div className="relative w-full h-56 overflow-hidden">
+              <div 
+                className="relative w-full h-56 overflow-hidden rounded-t-lg m-0 p-0"
+              > 
                 <Image
                   src={event.image}
                   alt={event.title}
@@ -178,10 +180,12 @@ export default function EventsPage() {
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
+                {/* Date Badge */}
                 <div className="absolute top-4 left-4 p-2 bg-primary/90 text-primary-foreground font-semibold rounded-lg text-center leading-none shadow-lg">
-                    <p className="text-lg">{event.date.split('-')[2]}</p> 
-                    <p className="text-sm">{new Date(event.date).toLocaleString('default', { month: 'short' })}</p>
+                  <p className="text-lg">{event.date.split('-')[2]}</p> 
+                  <p className="text-sm">{new Date(event.date).toLocaleString('default', { month: 'short' })}</p>
                 </div>
+                {/* Category Badge */}
                 <div className="absolute bottom-4 right-4">
                   <Badge className="shadow-md font-medium px-3 py-1 bg-background/90 backdrop-blur-sm text-foreground">
                     {event.category}
@@ -210,7 +214,7 @@ export default function EventsPage() {
                   <Link href={`/events/${event.id}`}>View Details</Link>
                 </Button>
                 
-                {/* --- Conditional Registration Button Logic --- */}
+                {/* Conditional Registration Button Logic */}
                 {event.registrationOpen ? (
                   <Button className="w-1/2 shadow-md" asChild>
                     <a href={event.registrationLink}>Register</a>
@@ -224,8 +228,6 @@ export default function EventsPage() {
                     Registration Closed
                   </Button>
                 )}
-                {/* --- End Conditional Logic --- */}
-
               </CardFooter>
             </Card>
           )
@@ -238,8 +240,9 @@ export default function EventsPage() {
           </div>
         )}
       </div>
+      {/* --- End Event Grid --- */}
 
-      {/* Pagination */}
+      {/* --- Pagination --- */}
       {totalPages > 1 && (
         <Pagination className="mt-10">
           <PaginationContent>
@@ -274,6 +277,7 @@ export default function EventsPage() {
           </PaginationContent>
         </Pagination>
       )}
+      {/* --- End Pagination --- */}
     </div>
   )
 }

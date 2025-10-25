@@ -100,23 +100,29 @@ function AnimatedParticipants({ value, max, registrationOpen }: { value: number;
   );
 }
 
-const events = [
-  { id: 1, title: "Full Stack Tech Workshop 2025", description: "Intensive workshop on emerging technologies.", date: "2025-11-15", time: "10:00 AM", location: "PCCOER", category: "Workshop", image: "/events/workshop.jpg", registrationLink: "#", registrationOpen: true, participants: 45, maxParticipants: 50 },
-  { id: 2, title: "Competitive Coding Challenge", description: "Test your programming skills in this competitive coding challenge. REGISTRATION IS NOW CLOSED.", date: "2025-11-20", time: "2:00 PM", location: "PCCOER", category: "Competition", image: "/events/coding.jpg", registrationLink: "#", registrationOpen: false, participants: 100, maxParticipants: 100 },
-  { id: 3, title: "Industry Expert Talk on AI/ML", description: "Learn from industry professionals about the latest trends in technology.", date: "2025-11-25", time: "11:00 AM", location: "PCCOER", category: "Seminar", image: "/events/talk.jpg", registrationLink: "#", registrationOpen: true, participants: 28, maxParticipants: 75 },
-  { id: 4, title: "Webinar: Intro to Cloud Computing", description: "Introductory session on key cloud concepts and services like AWS and Azure.", date: "2025-12-05", time: "4:00 PM", location: "PCCOER", category: "Webinar", image: "/events/expo.jpg", registrationLink: "#", registrationOpen: true, participants: 156, maxParticipants: 200 },
-  { id: 5, title: "Annual Student Conference", description: "A two-day conference featuring keynote speakers and research paper presentations.", date: "2025-12-10", time: "9:00 AM", location: "PCCOER", category: "Conference", image: "/events/conference.jpg", registrationLink: "#", registrationOpen: true, participants: 89, maxParticipants: 150 },
-  { id: 6, title: "Game Dev Jam", description: "Develop a game from scratch in 48 hours.", date: "2025-12-15", time: "6:00 PM", location: "PCCOER", category: "Workshop", image: "/events/gamedev.jpg", registrationLink: "#", registrationOpen: true, participants: 32, maxParticipants: 40 },
-  { id: 7, title: "Cybersecurity Bootcamp", description: "Hands-on training in network security and ethical hacking.", date: "2026-01-10", time: "9:00 AM", location: "PCCOER", category: "Workshop", image: "/events/security.jpg", registrationLink: "#", registrationOpen: false, participants: 60, maxParticipants: 60 },
-  { id: 8, title: "Data Science Visualization", description: "Master data visualization using Python and R.", date: "2026-01-20", time: "1:00 PM", location: "PCCOER", category: "Seminar", image: "/events/data.jpg", registrationLink: "#", registrationOpen: true, participants: 25, maxParticipants: 50 },
-  { id: 9, title: "Mobile App Hackathon", description: "Build a prototype mobile app in this intense competition.", date: "2026-02-01", time: "9:00 AM", location: "PCCOER", category: "Competition", image: "/events/hackathon.jpg", registrationLink: "#", registrationOpen: true, participants: 18, maxParticipants: 30 },
-  { id: 10, title: "Quantum Computing Talk", description: "Expert session on the future of quantum mechanics in computing.", date: "2026-02-15", time: "3:00 PM", location: "PCCOER", category: "Seminar", image: "/events/quantum.jpg", registrationLink: "#", registrationOpen: true, participants: 42, maxParticipants: 100 },
-]
+import { Event, getEventById } from "@/lib/events-data"
+
+type ParticipantsData = {
+  [key: number]: { current: number; max: number; }
+}
+
+const participantsData: ParticipantsData = {
+  1: { current: 45, max: 50 },
+  2: { current: 100, max: 100 },
+  3: { current: 28, max: 75 },
+  4: { current: 156, max: 200 },
+  5: { current: 89, max: 150 },
+  6: { current: 32, max: 40 },
+  7: { current: 60, max: 60 },
+  8: { current: 25, max: 50 },
+  9: { current: 18, max: 30 },
+  10: { current: 42, max: 100 }
+}
 
 export default async function EventPage({ params }: { params: { id: string } }) {
   const resolvedParams = await Promise.resolve(params);
   const eventId = parseInt(resolvedParams.id)
-  const event = events.find(e => e.id === eventId)
+  const event = await getEventById(eventId)
 
   if (!event) {
     notFound()
@@ -203,10 +209,14 @@ export default async function EventPage({ params }: { params: { id: string } }) 
           
           {/* 1. Registration/Action Card */}
           <div className="border rounded-lg p-4 shadow-lg sticky top-8 bg-card/80 backdrop-blur-sm">
-            <AnimatedParticipants value={event.participants} max={event.maxParticipants} registrationOpen={event.registrationOpen} />
+            <AnimatedParticipants 
+              value={participantsData[eventId].current} 
+              max={participantsData[eventId].max} 
+              registrationOpen={event.registrationOpen} 
+            />
 
             <div className="flex justify-center mb-4">
-              {event.registrationOpen && event.participants < event.maxParticipants ? (
+              {event.registrationOpen && participantsData[eventId].current < participantsData[eventId].max ? (
                 <Link href={event.registrationLink} className="w-full">
                   <Button 
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-lg"
@@ -220,7 +230,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                   variant="destructive"
                   className="w-full h-12 text-lg"
                 >
-                  {event.participants >= event.maxParticipants ? "Event Full" : "Registration Closed"}
+                  {participantsData[eventId].current >= participantsData[eventId].max ? "Event Full" : "Registration Closed"}
                 </Button>
               )}
             </div>
