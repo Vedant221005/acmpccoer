@@ -1,3 +1,4 @@
+import Blogs from "@/components/Blogs";
 import Domain from "@/components/Domain";
 import HomePage from "@/components/HomePage";
 import Image from "next/image";
@@ -9,6 +10,7 @@ export default function Home() {
             <HomePage />
 
       <Domain />
+      <Blogs />
     </div>
   );
 }
