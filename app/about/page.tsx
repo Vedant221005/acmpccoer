@@ -6,7 +6,7 @@ import mappin from "@/public/mappin.png";
 export default function AboutPage() {
   return (
     <div className="bg-zinc-900 min-h-screen text-white ">
-        <div className=" max-w-7xl mx-auto px-[5%] pt-10">
+        <div className=" max-w-7xl mx-auto px-[5%] pt-20">
             {/* acm info div */}
             <div className="flex justify-between items-center gap-20 pt-10 pb-10">
                 <div className="">
