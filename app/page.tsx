@@ -1,6 +1,5 @@
 import Blogs from "@/components/Blogs";
 import Domain from "@/components/Domain";
-import Footer from "@/components/Footer";
 import HomePage from "@/components/HomePage";
 import React from "react";
 import Image from "next/image";
@@ -12,7 +11,6 @@ export default function Home() {
 
       <Domain />
       <Blogs />
-      <Footer />
     </div>
   );
 }

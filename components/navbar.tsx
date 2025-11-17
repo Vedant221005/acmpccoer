@@ -15,7 +15,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: "ABOUT US", path: "/about", color: "blue" },
   // { name: "UPCOMING EVENT", path: "/upcomingevent", color: "green"},
-  { name: "EVENTS", path: "/event", color: "green" },
+  { name: "EVENTS", path: "/events", color: "green" },
   { name: "TEAM", path: "/team", color: "blue" },
   { name: "CONTACT US", path: "/contact", color: "green" },
 ];
@@ -62,13 +62,13 @@ export function Navbar() {
   }, [menuOpen]);
 
   return (
-    <header className="fixed w-screen flex justify-between items-center p-3 px-4 sm:px-4 bg-black dark:bg-gray-900 z-50 border-b border-gray-200 dark:border-gray-700">
+    <header className="fixed w-screen flex justify-between items-center p-3 px-4 sm:px-4 bg-black dark:bg-gray-900 z-50 border-b border-gray-200 dark:border-gray-700 h-20 overflow-hidden">
       <Link href="/" className="flex items-center flex-shrink-0">
         <Image
-          src="/logo1.png"
+          src="/logo2.png"
           alt="ACMXPCCOER Logo"
-          width={80}
-          height={80}
+          width={100}
+          height={90}
           className=""
         />
         <div className="flex flex-col align-left justify-center">
