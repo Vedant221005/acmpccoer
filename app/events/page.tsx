@@ -8,7 +8,8 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input" 
 import Link from "next/link"
 import { Search } from "lucide-react"
-import { events } from "@/lib/events-data" 
+import { events } from "@/lib/events-data"
+import ScrollReveal from "@/components/ScrollReveal" 
 import {
   Select,
   SelectContent,
@@ -48,6 +49,17 @@ export default function EventsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("all");
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  // Handle page change with scroll to top
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber)
+    scrollToTop()
+  }
 
   const typedEvents: Event[] = events as any; 
 
@@ -115,59 +127,65 @@ export default function EventsPage() {
 
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Events Dashboard</h1>
+    <div className="w-full min-h-screen bg-black">
+      <div className="container mx-auto py-8 px-4">
+        <ScrollReveal>
+          <h1 className="text-3xl font-bold mb-8 text-white">Events Dashboard</h1>
+        </ScrollReveal>
       
       {/* --- Filters and Sort --- */}
-      <div className="space-y-4 mb-10">
-        <div className="flex gap-4 flex-col sm:flex-row">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search events by title or description..."
-              className="w-full pl-10 h-12 text-base"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      <ScrollReveal>
+        <div className="space-y-4 mb-10">
+          <div className="flex gap-4 flex-col sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search events by title or description..."
+                className="w-full pl-10 h-12 text-white"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full sm:w-[200px] h-12  text-white">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">All Events (No sort)</SelectItem>
+                  <SelectItem value="upcoming">Upcoming Events</SelectItem>
+                  <SelectItem value="past">Past Events</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
-          
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-[200px] h-12">
-              <SelectValue placeholder="Sort by..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">All Events (No sort)</SelectItem>
-                <SelectItem value="upcoming">Upcoming Events</SelectItem>
-                <SelectItem value="past">Past Events</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
 
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={getButtonVariant(category)}
-              onClick={() => setActiveCategory(category)}
-              className="min-w-[120px] shadow-sm transition-all duration-200"
-            >
-              {category === "All" ? "All Events" : category}
-            </Button>
-          ))}
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={getButtonVariant(category)}
+                onClick={() => setActiveCategory(category)}
+                className={`min-w-[120px] shadow-sm transition-all duration-200 ${activeCategory === category ? "border border-white" : ""}`}
+              >
+                {category === "All" ? "All Events" : category}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
       {/* --- End Filters and Sort --- */}
 
       {/* --- Event Grid --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedEvents.length > 0 ? (
-          paginatedEvents.map((event) => (
+      <ScrollReveal>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {paginatedEvents.length > 0 ? (
+            paginatedEvents.map((event) => (
             <Card 
               key={event.id} 
-              className="flex flex-col overflow-hidden pt-0 transition-all duration-400 ease-in-out hover:scale-[1.01] hover:shadow-2xl group" 
+              className="flex flex-col overflow-hidden pt-0 transition-all duration-400 ease-in-out hover:scale-[1.01] hover:shadow-2xl group bg-black " 
             >
               <div 
                 className="relative w-full h-56 overflow-hidden rounded-t-lg m-0 p-0"
@@ -194,16 +212,16 @@ export default function EventsPage() {
               </div>
               
               <CardHeader className="pb-3">
-                <CardTitle className="text-xl leading-snug">{event.title}</CardTitle>
-                <CardDescription className="mt-1 text-sm font-medium">
+                <CardTitle className="text-xl leading-snug text-white">{event.title}</CardTitle>
+                <CardDescription className="mt-1 text-sm font-medium text-gray-300">
                   Time: {event.time}
                 </CardDescription>
               </CardHeader>
               
               <CardContent className="grow flex flex-col justify-between">
-                <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
+                <p className="text-sm text-gray-400 line-clamp-2">{event.description}</p>
                 <div className="mt-4">
-                  <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                  <p className="text-sm font-semibold text-gray-300">
                     <span role="img" aria-label="location-pin">📍</span> {event.location}
                   </p>
                 </div >
@@ -232,52 +250,54 @@ export default function EventsPage() {
             </Card>
           )
         )) : (
-          <div className="md:col-span-3 text-center py-10 border-2 border-dashed rounded-lg">
-            <p className="text-2xl font-semibold mb-2">No Results Found</p>
-            <p className="text-lg text-muted-foreground">
+          <div className="md:col-span-3 text-center py-10 border-2 border-dashed rounded-lg bg-slate-900 border-slate-700">
+            <p className="text-2xl font-semibold mb-2 text-white">No Results Found</p>
+            <p className="text-lg text-gray-400">
               We couldn't find any events matching your criteria.
             </p>
           </div>
         )}
       </div>
+      </ScrollReveal>
       {/* --- End Event Grid --- */}
 
-      {/* --- Pagination --- */}
-      {totalPages > 1 && (
-        <Pagination className="mt-10">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                aria-disabled={currentPage === 1}
-              />
-            </PaginationItem>
-
-            {/* Render page numbers */}
-            {[...Array(totalPages)].map((_, index) => (
-              <PaginationItem key={index + 1}>
-                <PaginationLink
-                  onClick={() => setCurrentPage(index + 1)}
-                  isActive={currentPage === index + 1}
-                  className="cursor-pointer"
-                >
-                  {index + 1}
-                </PaginationLink>
+        {/* --- Pagination --- */}
+        {totalPages > 1 && (
+          <Pagination className="mt-10">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} text-white bg-black border-white hover:bg-slate-100`}
+                  aria-disabled={currentPage === 1}
+                />
               </PaginationItem>
-            ))}
 
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                aria-disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
-      {/* --- End Pagination --- */}
+              {/* Render page numbers */}
+              {[...Array(totalPages)].map((_, index) => (
+                <PaginationItem key={index + 1}>
+                  <PaginationLink
+                    onClick={() => handlePageChange(index + 1)}
+                    isActive={currentPage === index + 1}
+                    className={`cursor-pointer ${currentPage === index + 1 ? "bg-blue-500 text-white border-blue-500" : "text-white bg-black border-white hover:bg-slate-100 hover:text-black"}`}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} text-white bg-black border-white hover:bg-slate-100`}
+                  aria-disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+        {/* --- End Pagination --- */}
+      </div>
     </div>
   )
 }
