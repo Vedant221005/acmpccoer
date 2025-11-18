@@ -17,7 +17,7 @@ const navItems: NavItem[] = [
   // { name: "UPCOMING EVENT", path: "/upcomingevent", color: "green"},
   { name: "EVENTS", path: "/events", color: "green" },
   { name: "TEAM", path: "/team", color: "blue" },
-  { name: "CONTACT US", path: "/contact", color: "green" },
+  { name: "GALLERY", path: "/gallery", color: "green" },
 ];
 
 const colorMap: Record<string, string> = {
